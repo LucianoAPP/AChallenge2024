@@ -1,0 +1,47 @@
+@if (product) {
+	<div
+		class="relative flex w-full max-w-xs flex-col overflow-hidden rounded-lg border border-gray-100 bg-white shadow-md duration-500 hover:scale-105 hover:shadow-xl"
+	>
+		<a class="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl" href="#">
+			<img
+				class="h-80 w-72 object-cover rounded-t-xl"
+				[src]="product.product_photo"
+				alt="{{ product.product_title }}"
+			/>
+			<span
+				class="absolute top-0 left-0 m-2 rounded-full bg-black px-2 text-center text-sm font-medium text-white"
+				>39% OFF</span
+			>
+		</a>
+		<div class="mt-4 px-5 pb-5">
+			<a href="#">
+				<h5 class="text-xl tracking-tight text-slate-900 text-container">
+					{{ product.product_title }}
+				</h5>
+			</a>
+			<div class="mt-2 mb-5 flex items-center justify-between">
+				<p>
+					<span class="text-2xl font-bold text-slate-900">{{
+						product.product_price | currency: product.currency
+					}}</span>
+					<span class="text-sm text-slate-900 line-through">{{
+						product.product_original_price | currency: product.currency
+					}}</span>
+				</p>
+				@if (product.product_star_rating !== undefined) {
+					<app-star-rating [rating]="product.product_star_rating" />
+				}
+			</div>
+			<div class="flex">
+				<mat-card-actions>
+					<button mat-icon-button color="primary" (click)="onEdit()">
+						<mat-icon>edit</mat-icon>
+					</button>
+					<button mat-icon-button color="warn" (click)="onDelete()">
+						<mat-icon>delete</mat-icon>
+					</button>
+				</mat-card-actions>
+			</div>
+		</div>
+	</div>
+}

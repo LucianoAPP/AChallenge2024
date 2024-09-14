@@ -1,0 +1,47 @@
+<section class="py-24 relative">
+	<div class="w-full max-w-7xl mx-auto px-4 md:px-8">
+		<div class="flex flex-col lg:flex-row lg:items-center max-lg:gap-4 justify-between w-full">
+			<div class="text-1xl font-semibold leading-8">
+				Total de productos productos: {{ (products$ | async)?.length }}
+			</div>
+			<div class="relative w-full max-w-sm">
+				<div class="flex justify-end gap-2">
+					<button mat-flat-button color="warn" (click)="resetProducts()">Resetear Productos</button>
+					<button mat-flat-button color="primary" (click)="openProductModal()">
+						Agregar Producto
+					</button>
+				</div>
+			</div>
+		</div>
+		<svg
+			class="my-7 w-full"
+			xmlns="http://www.w3.org/2000/svg"
+			width="1216"
+			height="2"
+			viewBox="0 0 1216 2"
+			fill="none"
+		>
+			<path d="M0 1H1216" stroke="#E5E7EB" />
+		</svg>
+		<div class="grid grid-cols-12 gap-4">
+			<div class="col-span-12 md:col-span-3 w-full max-md:max-w-md max-md:mx-auto">
+				<app-product-filters (filtersChanged)="onFiltersChanged($event)" />
+			</div>
+			<div class="col-span-12 md:col-span-9">
+				<div class="mt-10 grid grid-cols-1 gap-4 sm:mt-0 lg:grid-cols-3 lg:grid-rows-2">
+					@for (product of products$ | async; track product.asin) {
+						<app-product-card
+							[product]="product"
+							(edit)="editProduct($event)"
+							(delete)="deleteProduct($event)"
+						/>
+					} @empty {
+						@for (product of [0, 1, 2, 3, 4, 5, 6, 7]; track product) {
+							<app-product-card-skeleton />
+						}
+					}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
