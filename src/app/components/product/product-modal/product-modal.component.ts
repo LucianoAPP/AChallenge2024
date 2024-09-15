@@ -1,5 +1,10 @@
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import {
+	MatDialogRef,
+	MAT_DIALOG_DATA,
+	MatDialogModule,
+	MatDialog
+} from '@angular/material/dialog';
 import { FormGroup, NonNullableFormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,6 +12,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { Product } from '../../../features/products/product.types';
 import { MatIconModule } from '@angular/material/icon';
+import { ConfirmModalComponent } from '../../confirm-modal/confirm-modal.component';
 
 @Component({
 	selector: 'app-product-modal',
@@ -29,7 +35,8 @@ export class ProductModalComponent {
 	constructor(
 		private fb: NonNullableFormBuilder,
 		private dialogRef: MatDialogRef<ProductModalComponent>,
-		@Inject(MAT_DIALOG_DATA) public data: { product: Product }
+		@Inject(MAT_DIALOG_DATA) public data: { product: Product },
+		private dialog: MatDialog
 	) {
 		this.productForm = this.fb.group({
 			product_title: [data.product?.product_title || '', Validators.required],
@@ -46,16 +53,6 @@ export class ProductModalComponent {
 	}
 
 	save(): void {
-		if (this.#isFormDirty) {
-			const confirmExit = confirm('Tienes cambios sin guardar. ¿Estás seguro de que deseas salir?');
-			if (confirmExit) {
-				this.saveData();
-			}
-		} else {
-			this.dialogRef.close();
-		}
-	}
-	saveData() {
 		if (this.productForm.valid) {
 			const product: Product = {
 				asin: this.data.product?.asin || this.generateId(),
@@ -67,10 +64,20 @@ export class ProductModalComponent {
 
 	close(): void {
 		if (this.#isFormDirty) {
-			const confirmExit = confirm('Tienes cambios sin guardar. ¿Estás seguro de que deseas salir?');
-			if (confirmExit) {
-				this.dialogRef.close();
-			}
+			this.dialog
+				.open(ConfirmModalComponent, {
+					data: {
+						title: 'Tienes cambios sin guardar',
+						body: '¿Estás seguro de que deseas salir?',
+						ok: 'Si',
+						cancel: 'No'
+					}
+				})
+				.afterClosed()
+				.subscribe(async (confirmed) => {
+					if (confirmed !== 'confirmed') return;
+					this.dialogRef.close();
+				});
 		} else {
 			this.dialogRef.close();
 		}

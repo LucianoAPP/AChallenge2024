@@ -1,0 +1,31 @@
+<div class="relative flex flex-col md:w-128">
+	<div class="flex flex-col sm:flex-row items-center sm:items-start p-8 pb-6 sm:pb-8">
+		<div
+			class="flex flex-0 items-center justify-center w-10 h-10 sm:mr-4 rounded-full text-warn-600 bg-warn-100"
+		>
+			<mat-icon class="text-current" fontIcon="warning"></mat-icon>
+		</div>
+		<ng-container *ngIf="data.title || data.body">
+			<div
+				class="flex flex-col items-center sm:items-start mt-4 sm:mt-0 sm:pr-8 space-y-1 text-center sm:text-left"
+			>
+				<ng-container *ngIf="data.title">
+					<div class="text-xl leading-6 font-medium" [innerHTML]="data.title"></div>
+				</ng-container>
+				<ng-container *ngIf="data.body">
+					<div class="text-secondary" [innerHTML]="data.body"></div>
+				</ng-container>
+			</div>
+		</ng-container>
+	</div>
+	<div class="flex items-center justify-center sm:justify-end px-6 py-4 space-x-3 bg-gray-50">
+		<button mat-flat-button [color]="'warn'" (click)="close('confirmed')">
+			{{ data.ok }}
+		</button>
+		<ng-container *ngIf="data.cancel">
+			<button [color]="'info'" (click)="close('cancelled')" mat-stroked-button>
+				{{ data.cancel }}
+			</button>
+		</ng-container>
+	</div>
+</div>

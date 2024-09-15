@@ -10,7 +10,7 @@
 		</button> -->
 	</div>
 	<form class="flex flex-auto flex-col overflow-y-auto p-6 sm:p-8" [formGroup]="productForm">
-		<label class="truncate text-1lg font-medium leading-6 tracking-tight">Nombre producto</label>
+		<label class="truncate text-1lg font-medium leading-6 tracking-tight">Nombre</label>
 		<mat-form-field appearance="outline">
 			<input matInput formControlName="product_title" />
 			@if (productForm.get('product_title')!.hasError('required')) {

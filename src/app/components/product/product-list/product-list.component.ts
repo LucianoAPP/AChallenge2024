@@ -14,6 +14,7 @@ import { FilterValues, Product } from '../../../features/products/product.types'
 import { MatInputModule } from '@angular/material/input';
 import { ProductCardSkeletonComponent } from '../product-card-skeleton/product-card-skeleton.component';
 import { ProductFiltersComponent } from '../product-filters/product-filters.component';
+import { ConfirmModalComponent } from '../../confirm-modal/confirm-modal.component';
 
 @Component({
 	selector: 'app-product-list',
@@ -73,22 +74,22 @@ export class ProductListComponent implements OnInit {
 	}
 
 	openProductModal(product?: Product): void {
-		const dialogRef = this.dialog.open(ProductModalComponent, {
-			width: '400px',
-			data: { product },
-			disableClose: true
-		});
-		dialogRef.afterClosed().subscribe((result) => {
-			if (result) {
-				console.log(result);
-				console.log(product);
-				if (product) {
-					this.productService.updateProduct(result);
-				} else {
-					this.productService.addProduct(result);
+		this.dialog
+			.open(ProductModalComponent, {
+				width: '400px',
+				data: { product },
+				disableClose: true
+			})
+			.afterClosed()
+			.subscribe((result) => {
+				if (result) {
+					if (product) {
+						this.productService.updateProduct(result);
+					} else {
+						this.productService.addProduct(result);
+					}
 				}
-			}
-		});
+			});
 	}
 
 	editProduct(product: Product): void {
@@ -96,7 +97,20 @@ export class ProductListComponent implements OnInit {
 	}
 
 	deleteProduct(product: Product): void {
-		this.productService.deleteProduct(product.asin);
+		this.dialog
+			.open(ConfirmModalComponent, {
+				data: {
+					title: 'Eliminar producto',
+					body: '¿Estas seguro que desea eliminar el producto.?',
+					ok: 'Si',
+					cancel: 'No'
+				}
+			})
+			.afterClosed()
+			.subscribe(async (confirmed) => {
+				if (confirmed !== 'confirmed') return;
+				this.productService.deleteProduct(product.asin);
+			});
 	}
 
 	resetProducts(): void {

@@ -5,6 +5,6 @@ export const routes: Routes = [
 	{
 		path: '',
 		component: ProductsComponent,
-		title: 'Products'
+		title: 'Nisum - Challenge'
 	}
 ];
