@@ -4,13 +4,10 @@ import { ProductListComponent } from '../../components/product/product-list/prod
 
 @Component({
 	selector: 'app-products',
-	templateUrl: './products.component.html',
+	template: `<app-product-list></app-product-list>`,
 	standalone: true,
-	imports: [ProductListComponent],
-	styleUrls: ['./products.component.scss']
+	imports: [ProductListComponent]
 })
 export class ProductsComponent {
 	apiService = inject(ProductService);
-
-	constructor() {}
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { FormGroup, NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,7 +11,6 @@ import { FilterValues } from '../../../features/products/product.types';
 @Component({
 	selector: 'app-product-filters',
 	templateUrl: './product-filters.component.html',
-	styleUrls: ['./product-filters.component.scss'],
 	standalone: true,
 	imports: [
 		CommonModule,
@@ -24,8 +23,8 @@ import { FilterValues } from '../../../features/products/product.types';
 })
 export class ProductFiltersComponent implements OnInit {
 	@Output() filtersChanged = new EventEmitter<FilterValues>();
-
-	filterForm: FormGroup = this.fb.group({
+	readonly #fb = inject(NonNullableFormBuilder);
+	filterForm: FormGroup = this.#fb.group({
 		search: [''],
 		minPrice: [0],
 		maxPrice: [1000],
@@ -33,10 +32,9 @@ export class ProductFiltersComponent implements OnInit {
 		maxRating: [5, [Validators.min(0), Validators.max(5)]]
 	});
 
-	constructor(private fb: NonNullableFormBuilder) {}
 	ngOnInit(): void {
 		this.emitFilters();
-		this.filterForm.valueChanges.pipe(debounceTime(300)).subscribe(() => this.emitFilters());
+		this.filterForm.valueChanges.pipe(debounceTime(500)).subscribe(() => this.emitFilters());
 	}
 
 	private emitFilters(): void {

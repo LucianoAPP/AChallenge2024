@@ -6,8 +6,12 @@ import { HeaderComponent } from './components/header/header/header.component';
 	selector: 'app-root',
 	standalone: true,
 	imports: [RouterOutlet, HeaderComponent],
-	templateUrl: './app.component.html',
-	styleUrl: './app.component.scss'
+	template: `
+		<div class="max-w-screen-xl mx-auto px-5">
+			<app-header></app-header>
+			<router-outlet></router-outlet>
+		</div>
+	`
 })
 export class AppComponent {
 	title = 'Nisum-Challenge';

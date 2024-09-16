@@ -5,9 +5,6 @@
 		<div class="text-lg font-medium text-white">
 			{{ data.product ? 'Editar Producto' : 'Agregar Producto' }}
 		</div>
-		<!-- <button mat-icon-button (click)="close()" [tabIndex]="-1">
-			<mat-icon class="text-current" [svgIcon]="'thumb-up'"></mat-icon>
-		</button> -->
 	</div>
 	<form class="flex flex-auto flex-col overflow-y-auto p-6 sm:p-8" [formGroup]="productForm">
 		<label class="truncate text-1lg font-medium leading-6 tracking-tight">Nombre</label>
@@ -56,6 +53,9 @@
 			<input matInput formControlName="product_photo" placeholder="Imagen URL" />
 			@if (productForm.get('product_photo')!.hasError('required')) {
 				<mat-error> La imagen es requerida. </mat-error>
+			}
+			@if (productForm.get('product_photo')!.hasError('invalidUrl')) {
+				<mat-error> URL no es válida. </mat-error>
 			}
 		</mat-form-field>
 		<div class="mt-4 flex flex-col justify-between sm:mt-6 sm:flex-row sm:items-center">

@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { ProductService } from '../../../services/product.service';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { map, startWith, tap } from 'rxjs/operators';
+import { ReactiveFormsModule } from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,6 @@ import { ConfirmModalComponent } from '../../confirm-modal/confirm-modal.compone
 @Component({
 	selector: 'app-product-list',
 	templateUrl: './product-list.component.html',
-	styleUrls: ['./product-list.component.scss'],
 	standalone: true,
 	imports: [
 		CommonModule,
@@ -36,7 +35,10 @@ import { ConfirmModalComponent } from '../../confirm-modal/confirm-modal.compone
 })
 export class ProductListComponent implements OnInit {
 	productService = inject(ProductService);
+	private dialog = inject(MatDialog);
+
 	products$: Observable<Product[]> | undefined;
+	productsSubject = new BehaviorSubject<Product[]>([]);
 	#filtersSubject = new BehaviorSubject<FilterValues>({
 		search: '',
 		minPrice: 0,
@@ -45,32 +47,34 @@ export class ProductListComponent implements OnInit {
 		maxRating: 5
 	});
 
-	constructor(
-		private fb: NonNullableFormBuilder,
-		private dialog: MatDialog
-	) {}
-
 	ngOnInit(): void {
-		const products$ = this.productService.getProducts().pipe(startWith([] as Product[]));
+		this.productService
+			.getProducts()
+			.pipe(startWith([] as Product[]))
+			.subscribe((products) => {
+				this.productsSubject.next(products);
+			});
 		const filters$ = this.#filtersSubject.asObservable();
-		this.products$ = combineLatest([products$, filters$]).pipe(
+		this.products$ = combineLatest([this.productsSubject.asObservable(), filters$]).pipe(
 			map(([products, filters]) =>
-				products.filter((product) => {
-					const matchesSearch = product.product_title
-						?.toLowerCase()
-						.includes(filters.search.toLowerCase());
-					const withinPriceRange =
-						product.product_price >= filters.minPrice && product.product_price <= filters.maxPrice;
-					const ratingValue = product.product_star_rating || 0;
-					const withinRatingRange =
-						ratingValue >= filters.minRating && ratingValue <= filters.maxRating;
-					return matchesSearch && withinPriceRange && withinRatingRange;
-				})
-			),
-			tap((data) => {
-				console.log(data);
-			})
+				products.filter((product) => this.filterProduct(product, filters))
+			)
 		);
+	}
+
+	private filterProduct(product: Product, filters: FilterValues): boolean {
+		const matchesSearch =
+			product.product_title?.toLowerCase().includes(filters.search.toLowerCase()) || false;
+
+		const withinPriceRange =
+			product.product_price != null &&
+			product.product_price >= filters.minPrice &&
+			product.product_price <= filters.maxPrice;
+
+		const ratingValue = product.product_star_rating || 0;
+		const withinRatingRange = ratingValue >= filters.minRating && ratingValue <= filters.maxRating;
+
+		return matchesSearch && withinPriceRange && withinRatingRange;
 	}
 
 	openProductModal(product?: Product): void {
@@ -114,6 +118,7 @@ export class ProductListComponent implements OnInit {
 	}
 
 	resetProducts(): void {
+		this.productsSubject.next([]);
 		this.productService.resetProducts();
 	}
 

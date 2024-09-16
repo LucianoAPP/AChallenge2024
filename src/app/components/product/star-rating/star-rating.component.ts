@@ -3,7 +3,6 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 @Component({
 	selector: 'app-star-rating',
 	templateUrl: './star-rating.component.html',
-	styleUrls: ['./star-rating.component.scss'],
 	standalone: true
 })
 export class StarRatingComponent implements OnInit, OnChanges {

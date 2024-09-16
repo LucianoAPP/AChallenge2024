@@ -59,11 +59,8 @@ describe('ProductFiltersComponent', () => {
 
 	it('should emit filtersChanged event when form values change after debounceTime', fakeAsync(() => {
 		spyOn(component.filtersChanged, 'emit');
-
 		component.filterForm.get('search')!.setValue('Debounce Test');
-
 		tick(300);
-
 		expect(component.filtersChanged.emit).toHaveBeenCalledTimes(1);
 	}));
 
